@@ -64,9 +64,19 @@ async function main() {
   // ==================== USERS ====================
   console.log("👤 Creating users...");
   const hashedPassword = await bcrypt.hash("password123", 10);
+  const hashedAdminPassword = await bcrypt.hash("Password123!", 10);
 
-  const adminUser = await prisma.user.create({
-    data: {
+  // Main payroll admin account
+  await prisma.user.upsert({
+    where: { email: "payrolladmin@auntsallyslaundry.com" },
+    update: { password: hashedAdminPassword, role: "admin", isActive: true },
+    create: { email: "payrolladmin@auntsallyslaundry.com", password: hashedAdminPassword, role: "admin", isActive: true },
+  });
+
+  const adminUser = await prisma.user.upsert({
+    where: { email: "admin@auntsallys.com" },
+    update: {},
+    create: {
       email: "admin@auntsallys.com",
       password: hashedPassword,
       role: "admin",
